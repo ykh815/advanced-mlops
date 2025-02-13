@@ -1,0 +1,28 @@
+services:
+  db:
+    image: mariadb:10.8.2-rc-focal
+    container_name: mariadb
+    hostname: mariadb
+    volumes:
+      - ${PWD}/data:/tmp
+      - ${PWD}/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+    networks:
+      mlops_network:
+  adminer:
+    image: adminer
+    container_name: mariadb_adminer
+    hostname: adminer
+    restart: always
+    ports:
+      - "8089:8080"
+    networks:
+      mlops_network:
+networks:
+  mlops_network:
+    name: mlops_network
+    external: true

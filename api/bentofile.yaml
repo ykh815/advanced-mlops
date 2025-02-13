@@ -1,0 +1,10 @@
+service: "services.py:CreditScoreClassifier"
+include:
+  - "*.py"
+python:
+  packages:
+   - catboost
+   - scikit-learn
+   - joblib
+   - pandas
+   - python-dotenv

@@ -52,11 +52,18 @@ class Trainer:
     ):
         self._model_name = model_name
         self._base_dt = base_dt
-
-        # TODO: 기본 경로 작성
-        # 1. self._preprocessing_path는 아티팩트 경로 밑에 preprocessing/{self._model_name}/{self._base_dt} 로 설정
-        # 2. self._model_path는 아티팩트 경로 밑에 preprocessing/{self._model_name}/{self._base_dt} 로 설정
-
+        self._preprocessing_path = os.path.join(
+            artifacts_path,
+            "preprocessing",
+            self._model_name,
+            self._base_dt,
+        )
+        self._model_path = os.path.join(
+            artifacts_path,
+            "models",
+            self._model_name,
+            self._base_dt,
+        )
         # TODO: MLflow 실험 설정
         # self._experiment_name에 실험 이름을 저장함
         # 실험 이름 포맷은 training-현재시간 (현재 시간은 %Y-%m-%d-%H%M%S 포맷으로)

@@ -56,11 +56,13 @@ class Preprocessor:
     ):
         self._model_name = model_name
         self._base_dt = base_dt
-        
-        # TODO: 기본 저장 경로 작성
-        # 1. self._save_path에는 아티팩트 경로 밑에 preprocessing/{self._model_name}/{self._base_dt} 로 설정
-        # 2. 인코더는 self._save_path 밑에 encoders 폴더로 설정 (self._encoder_path)
-        
+        self._save_path = os.path.join(
+            artifacts_path,
+            "preprocessing",
+            self._model_name,
+            self._base_dt,
+        )
+        self._encoder_path = os.path.join(self._save_path, "encoders")
         self._make_dirs()
 
     def transform(self):

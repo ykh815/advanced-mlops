@@ -158,8 +158,7 @@ class Preprocessor:
         # 2. 딕셔너리 robust_scalers에 저장 (key=피처이름, value=scaler)
         # 3. 각 학습 데이터와 검증 데이터의 피처에 적용하여 대체
 
-        # TODO: 코드 작성
-        # 1. robust_scalers 딕셔너리를 self._encoder_path에 robust_scaler.joblib 이름으로 저장
+        # TODO: robust_scalers 딕셔너리를 self._encoder_path에 robust_scaler.joblib 이름으로 저장
 
         return x_train, x_val
 
@@ -217,6 +216,12 @@ if __name__ == "__main__":
     # 1. 본 파일을 실행할 때는 두 개의 인자를 받음
     # 2. model_name은 문자열로 받으며, 기본값은 "credit_score_classification"
     # 3. base_dt는 문자열을 받으며 기본값은 DateValues.get_current_date()
+    parser.add_argument(
+        
+    )
+    parser.add_argument(
+        
+    )
 
     args = parser.parse_args()
 

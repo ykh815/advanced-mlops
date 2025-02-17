@@ -48,10 +48,12 @@ class CreditScoreClassifier:
         customer_id = df.pop("customer_id")
         
         # TODO: RobustScaler 적용
+        
+        
 
         # TODO: 모델 추론 결과로 확률값과 예측 레이블을 저장
-        
-        
+        prob = None
+        label = None
         
         elapsed_ms = (time.time() - start_time) * 1000
 

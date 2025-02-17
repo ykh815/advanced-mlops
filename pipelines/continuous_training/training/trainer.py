@@ -64,9 +64,10 @@ class Trainer:
             self._model_name,
             self._base_dt,
         )
-        # TODO: MLflow 실험 설정
-        # self._experiment_name에 실험 이름을 저장함
-        # 실험 이름 포맷은 training-현재시간 (현재 시간은 %Y-%m-%d-%H%M%S 포맷으로)
+        # MLflow 실험 설정
+        self._experiment_name = (
+            f"training-{datetime.now().strftime('%Y-%m-%d-%H%M%S')}"
+        )
        
         self.is_trained = False
         self._make_dirs()
@@ -133,13 +134,31 @@ class Trainer:
                     early_stopping_rounds=50,
                 )
 
-                # TODO: MLflow logging
-                # 1. estimator_name 을 태그로 저장
-                # 2. 파라미터 로깅
-                # 3. Early stopping한 모델의 최종 iterations를 파라미터로 저장
-                # 4. self._parse_score_dict를 이용해 검증셋에 대한 스코어를 메트릭으로 저장
-                # 5. signature를 포함하여 모델 정보 로깅
-                # 6. 모델 객체 저장
+                # MLflow logging
+                # TODO: 1. estimator_name 을 태그로 저장
+                mlflow.set_tag(
+                    
+                )
+                # TODO: 2. 파라미터 로깅
+                mlflow.log_params(
+                    
+                )
+                # TODO: 3. Early stopping한 모델의 최종 iterations를 파라미터로 저장
+                mlflow.log_params(
+                    
+                )
+                # TODO: 4. self._parse_score_dict를 이용해 검증셋에 대한 스코어를 메트릭으로 저장
+                mlflow.log_metrics(
+                    
+                )
+                # TODO: 5. signature를 포함하여 모델 정보 로깅
+                mlflow.catboost.log_model(
+                    
+                )
+                # TODO: 6. 모델 객체 저장
+                mlflow.catboost.save_model(
+                    
+                )
 
         self.is_trained = True
 
@@ -161,8 +180,11 @@ class Trainer:
             )
 
         # TODO: 최적 모델 탐색
-        # mlflow.search_run 메서드를 이용해
+        # mlflow.search_runs 메서드를 이용해
         # metrics.Accuracy를 내림차순으로 정렬하여 맨 위의 데이터를 best_run_df에 저장
+        best_run_df = mlflow.search_runs(
+            
+        )
 
         if len(best_run_df) == 0:
             raise AttributeError(
@@ -183,6 +205,9 @@ class Trainer:
         # TODO: 모델 저장
         # 1. Model URI로부터 모델을 불러오기
         # 2. 파라미터 정보를 메타데이터로 저장
+        bentoml.catboost.save_model(
+            
+        )
 
     def _make_dirs(self) -> None:
         """기존 모델 경로가 존재하면 제거합니다.
@@ -283,6 +308,12 @@ if __name__ == "__main__":
     # 1. 본 파일을 실행할 때는 두 개의 인자를 받음
     # 2. model_name은 문자열로 받으며, 기본값은 "credit_score_classification"
     # 3. base_dt는 문자열을 받으며 기본값은 DateValues.get_current_date()
+    parser.add_argument(
+        
+    )
+    parser.add_argument(
+        
+    )
 
     args = parser.parse_args()
 

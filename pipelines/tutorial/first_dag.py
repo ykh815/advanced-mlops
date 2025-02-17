@@ -11,10 +11,22 @@ local_timezone = pendulum.timezone("Asia/Seoul")
 
 with DAG(
     # TODO: "simple_dag"이라는 이름의 DAG 설정
+    dag_id="",
     # TODO: default_args에는 다음 내용이 들어감
     # TODO: "user" 사용자가 소유한 DAG / 본인의 이메일 / 실패 및 재시도 시 이메일 알림 여부
     # TODO: 재시도 1회 / 재시도 간격 5분
     # TODO: 실패 시 callback (failure_callback) / 성공 시 callback (success_callback)
+    default_args={
+        "owner": "",
+        "depends_on_past": None,
+        "email": "",
+        "email_on_failure": None,
+        "email_on_retry": None,
+        "retries": None,
+        "retry_delay": None,
+        "on_failure_callback": None,
+        "on_success_callback": None,
+    },
     description="Simple airflow dag",
     schedule="0 15 * * *",
     start_date=datetime(2025, 3, 1, tzinfo=local_timezone),

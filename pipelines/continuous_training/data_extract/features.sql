@@ -9,7 +9,7 @@ WHERE base_dt <= DATE_FORMAT(
     ) OR 
     base_dt = STR_TO_DATE('{{ ds }}', '%Y-%m-%d');
     
--- 3. 새로운 데이터 삽입
+-- 2. 새로운 데이터 삽입
 INSERT INTO mlops.credit_score_features_target (
         base_dt,
         id,

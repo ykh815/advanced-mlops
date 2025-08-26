@@ -1,14 +1,15 @@
 from datetime import datetime
-from typing import List
 
 import bentoml
 import pendulum
 import requests
-from airflow import DAG
-from airflow.models import Variable
-from airflow.operators.bash import BashOperator
-from airflow.operators.empty import EmptyOperator
-from airflow.operators.python import BranchPythonOperator, PythonOperator
+from airflow.providers.standard.operators.bash import BashOperator
+from airflow.providers.standard.operators.empty import EmptyOperator
+from airflow.providers.standard.operators.python import (
+    BranchPythonOperator,
+    PythonOperator,
+)
+from airflow.sdk import DAG, Variable, get_current_context
 
 from utils.callbacks import failure_callback, success_callback
 
@@ -16,13 +17,17 @@ local_timezone = pendulum.timezone("Asia/Seoul")
 airflow_dags_path = Variable.get("AIRFLOW_DAGS_PATH")
 
 
-def get_branch_by_api_status() -> List[str] | str:
+def get_branch_by_api_status() -> list[str] | str:
+    """
+    API 상태를 확인하여 분기를 결정하는 함수.
+    Airflow 3.x에서는 provide_context가 제거되어 함수 시그니처 변경 불필요.
+    """
     try:
         response = requests.get("http://localhost:3000/healthz")
         if response.status_code == 200:
             # TODO: 헬스체크의 응답이 올바르게 왔다면 다음 Task를 실행해야 함
             # "get_deployed_model_creation_time", "get_latest_trained_model_creation_time" 를 실행해야 함
-            return 
+            return
         else:
             return "deploy_new_model"
     except Exception as e:
@@ -36,7 +41,7 @@ def get_deployed_model_creation_time() -> datetime | None:
         response = requests.post("http://localhost:3000/metadata")
         if response.status_code == 200:
             # TODO: 메타데이터 조회 응답이 올바르게 왔다면 메타데이터 내 모델의 생성 시간(creation_time)을 datetime 객체로 반환해야 함
-            return 
+            return
         else:
             print(
                 f"`creation_time`을 불러올 수 없습니다.: {response.status_code}"
@@ -52,17 +57,22 @@ def get_latest_trained_model_creation_time() -> datetime | None:
     try:
         bento_model = bentoml.models.get("credit_score_classifier:latest")
         # TODO: bento_model의 creation_time의 timezone 정보를 제거하고 반환
-        return 
+        return
     except Exception as e:
         print(f"Error getting latest trained model creation time: {e}")
         return None
 
 
-def decide_model_update(ti):
+def decide_model_update():
     """
     현재 배포된 모델과 로컬 최신 학습 모델의 creation_time 비교.
     배포된 모델이 오래되었으면 새로운 모델을 배포하도록 결정.
+
+    Airflow 3.x에서는 명시적으로 ti를 인자로 받는 것을 권장하지만,
+    기존 코드와의 호환성을 위해 이 방식도 계속 지원.
     """
+    context = get_current_context()
+    ti = context["ti"]
     api_status = ti.xcom_pull(task_ids="get_branch_by_api_status")
 
     if api_status == "deploy_new_model":
@@ -106,7 +116,7 @@ with DAG(
     schedule=None,
     start_date=datetime(2025, 1, 1, tzinfo=local_timezone),
     catchup=False,
-    tags=["lgcns", "mlops"],
+    tags=set(["lgcns", "mlops"]),
 ) as dag:
     # TODO: API 상태 체크 결과 가져오기
     get_api_status_task = EmptyOperator(task_id="get_branch_by_api_status")

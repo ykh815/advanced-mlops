@@ -2,11 +2,10 @@ import os
 from datetime import datetime
 
 import pendulum
-from airflow import DAG
-from airflow.models import Variable
-from airflow.operators.empty import EmptyOperator
-from airflow.operators.bash import BashOperator
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
+from airflow.providers.standard.operators.bash import BashOperator
+from airflow.providers.standard.operators.empty import EmptyOperator
+from airflow.sdk import DAG, Variable
 
 from utils.callbacks import failure_callback, success_callback
 from utils.common import read_sql_file
@@ -22,6 +21,11 @@ sql_file_path = os.path.join(
     "features.sql",
 )
 
+kst_ds_template = (
+    "{{ data_interval_start.in_timezone('Asia/Seoul').to_date_string() }}"
+)
+
+
 with DAG(
     dag_id="credit_score_classification_ct",
     default_args={
@@ -35,11 +39,11 @@ with DAG(
     schedule=None,
     start_date=datetime(2025, 1, 1, tzinfo=local_timezone),
     catchup=False,
-    tags=["lgcns", "mlops"],
+    tags=set(["lgcns", "mlops"]),
 ) as dag:
     # TODO: 코드 작성
     # 아래 Task를 적절한 Operator를 사용하여 구현
-    
+
     data_extract = EmptyOperator(task_id="data_extraction")
 
     data_preprocessing = EmptyOperator(task_id="data_preprocessing")

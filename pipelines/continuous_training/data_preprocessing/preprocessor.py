@@ -7,7 +7,7 @@ import pandas as pd
 from dotenv import load_dotenv
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import RobustScaler
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 
 from utils.dates import DateValues
 
@@ -152,16 +152,15 @@ class Preprocessor:
             Tuple[pd.DataFrame, pd.DataFrame]: 스케일링 완료 후 데이터 (학습, 검증)
         """
         robust_scalers = {}
-        
+
         # TODO: 코드 작성
-        # 1. 각 피처마다 RobustScaler()를 생성하여 적합시키고 
+        # 1. 각 피처마다 RobustScaler()를 생성하여 적합시키고
         # 2. 딕셔너리 robust_scalers에 저장 (key=피처이름, value=scaler)
         # 3. 각 학습 데이터와 검증 데이터의 피처에 적용하여 대체
 
         # TODO: robust_scalers 딕셔너리를 self._encoder_path에 robust_scaler.joblib 이름으로 저장
 
         return x_train, x_val
-
 
     def _make_dirs(self) -> None:
         """저장될 경로가 존재하지 않으면 해당 폴더를 생성합니다."""
@@ -211,17 +210,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="An argument parser for preprocessor."
     )
-    
+
     # TODO: 코드 작성
     # 1. 본 파일을 실행할 때는 두 개의 인자를 받음
     # 2. model_name은 문자열로 받으며, 기본값은 "credit_score_classification"
     # 3. base_dt는 문자열을 받으며 기본값은 DateValues.get_current_date()
-    parser.add_argument(
-        
-    )
-    parser.add_argument(
-        
-    )
+    parser.add_argument()
+    parser.add_argument()
 
     args = parser.parse_args()
 

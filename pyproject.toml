@@ -1,0 +1,29 @@
+# pyproject.toml
+
+[project]
+name = "advanced-mlops"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12.7"
+dependencies = [
+    "aiomysql==0.2.0",
+    "apache-airflow==3.0.4",
+    "apache-airflow-providers-mysql==6.3.3",
+    "bentoml==1.4.19",
+    "catboost==1.2.8",
+    "fastapi==0.116.1",
+    "locust==2.39.0",
+    "mlflow==3.2.0",
+    "mysqlclient==2.2.7",
+    "numpy==2.3.2",
+    "pandas==2.3.1",
+    "pip==25.2",
+    "pymysql==1.1.1",
+    "python-dotenv==1.1.1",
+    "scikit-learn==1.7.1",
+    "tqdm==4.67.1",
+]
+
+[dependency-groups]
+jupyter = ["ipykernel>=6.29.5", "ipython>=8.31.0", "jupyter>=1.1.1"]

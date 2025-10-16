@@ -185,21 +185,21 @@ class Trainer:
         self, model: CatBoostClassifier, params: dict, x_train: pd.DataFrame
     ) -> None:
         """학습된 모델의 정보와 결과를 MLflow에 로깅합니다."""
-        # TODO: 1. estimator_name 을 태그로 저장
-        mlflow.set_tag()  # type: ignore
-        # TODO: 2. 파라미터 로깅
-        mlflow.log_params()  # type: ignore
-        # TODO: 3. Early stopping한 모델의 최종 iterations를 파라미터로 저장
-        mlflow.log_param()  # type: ignore
-        # TODO: 4. self._parse_score_dict를 이용해 검증셋에 대한 스코어를 메트릭으로 저장
+        mlflow.set_tag("estimator_name", model.__class__.__name__)  # type: ignore
+        mlflow.log_params({key: model.get_params()[key] for key in params})  # type: ignore
+        mlflow.log_param("iterations", model.best_iteration_)  # type: ignore
         mlflow.log_metrics(  # type: ignore
+            self._parse_score_dict(model.get_best_score().get("validation"))
         )
 
-        # TODO: 5. signature를 포함하여 모델 정보 로깅
         # `infer_signature`는 모델의 입력 및 출력 스키마를 자동으로 추론합니다.
         # 이는 모델을 사용할 때 데이터 유효성 검사를 활성화하고,
         # MLflow UI에서 모델의 입출력 형식을 명확하게 보여주는 중요한 역할을 합니다.
-        mlflow.catboost.log_model()
+        mlflow.catboost.log_model(
+            model,
+            "CatBoostClassifier",
+            signature=infer_signature(x_train, model.predict(x_train)),
+        )
 
     def _get_best_run(self, experiment_id: str) -> Run:
         """
@@ -219,11 +219,12 @@ class Trainer:
                 "학습이 진행되지 않았습니다. 실험 결과를 가져올 수 없습니다."
             )
 
-        # TODO: 최적 모델 탐색
         # mlflow.search_runs 메서드를 이용해
         # metrics.Accuracy를 내림차순으로 정렬하여 맨 위의 데이터를 best_run_df에 저장
         best_run_df = mlflow.search_runs(  # type: ignore
-            ...
+            experiment_ids=[experiment_id],
+            order_by=["metrics.Accuracy DESC"],
+            max_results=1,
         )
 
         if len(best_run_df) == 0:
@@ -246,12 +247,15 @@ class Trainer:
         model_uri = f"runs:/{run_id}/CatBoostClassifier"
         model = mlflow.catboost.load_model(model_uri)
 
-        # TODO: 모델 객체 저장
         # BentoML로 모델을 저장할 때 `signatures`를 정의하면,
         # API 서버에서 이 모델의 `predict` 함수를 어떻게 호출할지 명시할 수 있습니다.
         # `batchable=True`는 여러 입력을 한 번에 처리할 수 있도록 하여 처리량을 높입니다.
-        # `metadata`에는 모델 학습에 사용된 파라미터를 저장하여, 나중에 모델을 추적하고 재현하는 데 사용합니다.
-        bentoml.catboost.save_model()
+        bentoml.catboost.save_model(
+            name=self._config.model_name,
+            model=model,
+            signatures={"predict": {"batchable": True, "batch_dim": 0}},
+            metadata=best_run.data.params,
+        )
         print(f"최적 모델을 BentoML에 저장 완료: {self._config.model_name}")
 
     @staticmethod
@@ -323,12 +327,20 @@ def main():
     parser = argparse.ArgumentParser(
         description="모델 학습 파이프라인을 위한 인자 파서"
     )
-    # TODO: 코드 작성
-    # 1. 본 파일을 실행할 때는 두 개의 인자를 받음
-    # 2. model_name은 문자열로 받으며, 기본값은 "credit_score_classification"
-    # 3. base_dt는 문자열을 받으며 기본값은 DateValues.get_current_date()
-    parser.add_argument()
-    parser.add_argument()
+    parser.add_argument(
+        "--model_name",
+        type=str,
+        default="credit_score_classification",
+        help="학습할 모델의 이름",
+        dest="model_name"
+    )
+    parser.add_argument(
+        "--base_dt",
+        type=str,
+        default=DateValues.get_current_date(),
+        help="데이터의 기준 날짜 (YYYY-MM-DD 형식)",
+        dest="base_dt"
+    )
     args = parser.parse_args()
 
     config = TrainingConfig(model_name=args.model_name, base_dt=args.base_dt)

@@ -1,16 +1,12 @@
-# TODO: 아래 비어있는 내용을 추가해야 함
-# 1. build 정보
-# 2. 볼륨 마운트 정보
-
 services:
   continuous_training_pipeline:
     build:
-      context: 
-      dockerfile:
+      context: ../../..
+      dockerfile: pipelines/continuous_training/docker/Dockerfile
     image: credit_score_classification:ct-pipeline-latest
     container_name: credit_score_classification_ct_pipeline
     volumes:
-      - 
+      - ${HOME}/airflow/artifacts:/home/codespace/artifacts
     environment:
       PYTHONPATH: /home/codespace
       ARTIFACTS_PATH: /home/codespace/artifacts

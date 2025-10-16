@@ -44,9 +44,25 @@ with DAG(
     # TODO: 코드 작성
     # 아래 Task를 적절한 Operator를 사용하여 구현
 
-    data_extract = EmptyOperator(task_id="data_extraction")
+    data_extract = SQLExecuteQueryOperator(
+        task_id="data_extraction",
+        conn_id=conn_id,
+        sql=read_sql_file(sql_file_path),
+        split_statements=True,
+    )
 
-    data_preprocessing = EmptyOperator(task_id="data_preprocessing")
+    data_preprocessing = BashOperator(
+        task_id="data_preprocessing",
+        bash_command=f"cd {airflow_dags_path}/pipelines/continuous_training/docker &&"
+        "docker compose up --build && docker compose down",
+        env={
+            "PYTHON_FILE": "/home/codespace/data_preprocessing/preprocessor.py",
+            "MODEL_NAME": "credit_score_classification",
+            "BASE_DT": kst_ds_template,
+        },
+        append_env=True,
+        retries=1,
+    )
 
     training = EmptyOperator(task_id="model_training")
 

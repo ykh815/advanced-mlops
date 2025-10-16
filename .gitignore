@@ -181,3 +181,5 @@ mlruns/
 
 # Catboost
 catboost_info/
+
+.vscode

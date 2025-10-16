@@ -221,7 +221,6 @@ if __name__ == "__main__":
         description="An argument parser for preprocessor."
     )
 
-    # TODO: 코드 작성
     # 1. 본 파일을 실행할 때는 두 개의 인자를 받음
     # 2. model_name은 문자열로 받으며, 기본값은 "credit_score_classification"
     # 3. base_dt는 문자열을 받으며 기본값은 DateValues.get_current_date()

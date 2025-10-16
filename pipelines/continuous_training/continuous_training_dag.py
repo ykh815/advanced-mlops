@@ -41,7 +41,6 @@ with DAG(
     catchup=False,
     tags=set(["lgcns", "mlops"]),
 ) as dag:
-    # TODO: 코드 작성
     # 아래 Task를 적절한 Operator를 사용하여 구현
 
     data_extract = SQLExecuteQueryOperator(
